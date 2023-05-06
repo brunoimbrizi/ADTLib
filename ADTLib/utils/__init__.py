@@ -12,13 +12,17 @@ import numpy as np
 import subprocess
 from fpdf import FPDF
 import ADTLib
-import tensorflow as tf
-from tensorflow.contrib import rnn
+import tensorflow.compat.v1 as tf
+import tensorflow.compat.v1.nn.rnn_cell as rnn
 
-def spec(file):
-    return madmom.audio.spectrogram.Spectrogram(file, frame_size=2048, hop_size=512, fft_size=2048,num_channels=1)
+tf.disable_v2_behavior()
+
+def spec(data, sample_rate=None, num_channels=1):
+    signal = madmom.audio.signal.Signal(data, sample_rate=sample_rate, num_channels=num_channels)
+    spec = madmom.audio.spectrogram.Spectrogram(signal, frame_size=2048, hop_size=512, fft_size=2048, num_channels=num_channels)
+    return spec, signal.sample_rate
     
-def meanPPmm(Track,Lambda,mi,ma,hop=512,fs=44100,dif=0.05):
+def meanPPmm(Track, Lambda, mi, ma, sample_rate=22050, hop=512, dif=0.05):
 
     m=np.mean(Track)*Lambda;
     if ma != 0:
@@ -37,11 +41,11 @@ def meanPPmm(Track,Lambda,mi,ma,hop=512,fs=44100,dif=0.05):
             onsets=np.append(onsets,i+1)
             values=np.append(values,Track[i+1])
     if len(onsets) >0: 
-        onsets=(onsets*hop)/float(fs)
+        onsets=(onsets*hop)/float(sample_rate)
     for i in range(1,len(onsets)):
         if abs(onsets[i]-onsets[i-1])<dif:
             ind=np.argmax(values[i-1:i+1])
-            np.delete(onsets,onsets[i-1+ind])
+            np.delete(onsets,min(onsets[i-1+ind].astype(int), len(onsets)-1))
   
     return onsets
 
