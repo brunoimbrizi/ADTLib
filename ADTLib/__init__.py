@@ -24,7 +24,7 @@ num_channels : int, optional
 """
 def ADT(data, sample_rate=None, num_channels=1, text='no', tab='no', save_dir=None, output_act='no'):
     location=utils.location_extract()
-    Onsets=[]
+
     if output_act=='yes':
         acts=[]
 
@@ -41,7 +41,8 @@ def ADT(data, sample_rate=None, num_channels=1, text='no', tab='no', save_dir=No
     if tab=='yes':
         utils.tab_create([Peaks[2],Peaks[1],Peaks[0]],data,save_dir)
 
-    Onsets.append({'Kick':Peaks[0],'Snare':Peaks[1],'Hihat':Peaks[2]})
+    Onsets = {'Kick':Peaks[0], 'Snare':Peaks[1], 'Hihat':Peaks[2]}
+
     if output_act=='yes':
         acts.append(AFs)
     if output_act=='yes':        
