@@ -15,6 +15,9 @@ import ADTLib
 import tensorflow.compat.v1 as tf
 import tensorflow.compat.v1.nn.rnn_cell as rnn
 
+# Hide GPU from visible devices
+tf.config.set_visible_devices([], 'GPU')
+
 tf.disable_v2_behavior()
 
 def spec(data, sample_rate=None, num_channels=1):
